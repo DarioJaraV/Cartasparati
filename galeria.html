@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galería - Mis Cartas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Caveat:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylegaleria.css">
+</head>
+<body>
+
+    <div id="editor-panel" class="hidden">
+        <h3>Modo Editor</h3>
+        <p id="edit-status">Selecciona una carta para editar</p>
+        <label>Título:</label>
+        <input type="text" id="editTitle">
+        <label>Mensaje:</label>
+        <textarea id="editMsg" rows="4"></textarea>
+        <label>Color:</label>
+        <input type="color" id="editColor">
+        <div class="editor-buttons">
+            <button onclick="saveChanges()" class="btn-primary">Guardar Cambios</button>
+            <button onclick="deleteLetter()" id="btn-delete" class="btn-danger hidden">Eliminar Carta</button>
+            <button onclick="crearNuevaCarta()" class="btn-secondary">+ Nueva Carta</button>
+        </div>
+    </div>
+
+    <div class="gallery-container">
+        <header>
+            <div class="main-title">
+                <h1>Tus Cartas</h1>
+                <div class="title-underline"></div>
+            </div>
+            <p id="instrucciones">Presiona una carta para leer</p>
+        </header>
+        <div class="cards-grid" id="contenedor-sobres"></div>
+        <div class="footer-links">
+            <a href="index.html" class="logout-btn" onclick="localStorage.removeItem('currentUser')">Cerrar Sesión</a>
+        </div>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="overlay" onclick="closeLetter()"></div>
+        <div class="paper">
+            <button class="close-btn" onclick="closeLetter()">✕</button>
+            <div class="red-line"></div>
+            <div id="text" class="note-content"></div>
+        </div>
+    </div>
+
+    <script>
+        const user = localStorage.getItem('currentUser');
+        let cartaSeleccionadaIdx = null;
+
+        if (!user) window.location.href = 'index.html';
+        
+        function getCartas() {
+            return JSON.parse(localStorage.getItem('misCartas')) || [
+                { titulo: "Recuerdos", mensaje: "¡Este es un mensaje especial! ❤️", color: "#e6b8af" }
+            ];
+        }
+
+        let misCartas = getCartas();
+
+        if (user === 'admin') {
+            document.getElementById('editor-panel').classList.remove('hidden');
+        }
+
+        function render() {
+            const cont = document.getElementById('contenedor-sobres');
+            cont.innerHTML = '';
+            misCartas.forEach((c, i) => {
+                const wrap = document.createElement('div');
+                wrap.className = 'envelope-wrapper';
+                wrap.innerHTML = `
+                    <div class="envelope" onclick="selectLetter(${i})" style="--bg: ${c.color}">
+                        <div class="letter-preview"></div>
+                        <div class="pocket"></div>
+                        <div class="flap"></div>
+                    </div>
+                    <span class="label">${c.titulo}</span>
+                `;
+                cont.appendChild(wrap);
+            });
+        }
+
+        function selectLetter(i) {
+            cartaSeleccionadaIdx = i;
+            if(user === 'admin') {
+                document.getElementById('editTitle').value = misCartas[i].titulo;
+                document.getElementById('editMsg').value = misCartas[i].mensaje;
+                document.getElementById('editColor').value = misCartas[i].color;
+                document.getElementById('btn-delete').classList.remove('hidden');
+            } else {
+                document.getElementById('text').innerText = misCartas[i].mensaje;
+                document.getElementById('modal').classList.remove('hidden');
+            }
+        }
+
+        function saveChanges() {
+            if(cartaSeleccionadaIdx !== null) {
+                misCartas[cartaSeleccionadaIdx].titulo = document.getElementById('editTitle').value;
+                misCartas[cartaSeleccionadaIdx].mensaje = document.getElementById('editMsg').value;
+                misCartas[cartaSeleccionadaIdx].color = document.getElementById('editColor').value;
+                localStorage.setItem('misCartas', JSON.stringify(misCartas));
+                render();
+                alert("¡Guardado!");
+            }
+        }
+
+        function closeLetter() { document.getElementById('modal').classList.add('hidden'); }
+        render();
+    </script>
+</body>
+</html>

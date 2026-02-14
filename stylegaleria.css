@@ -1,0 +1,233 @@
+/* RESET Y FONDO */
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+
+
+body {
+
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+
+    min-height: 100vh; display: flex; overflow-x: hidden; position: relative;
+
+}
+
+
+
+.hidden { display: none !important; }
+
+
+
+/* PANEL EDITOR */
+
+#editor-panel {
+
+    width: 270px; background: rgba(255, 255, 255, 0.95); padding: 20px;
+
+    box-shadow: 2px 0 15px rgba(0,0,0,0.1); z-index: 100; border-right: 1px solid #ddd;
+
+}
+
+.btn-primary { background: #007aff; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+
+
+
+/* TÍTULO PRINCIPAL */
+
+.gallery-container { flex-grow: 1; padding: 60px 40px; text-align: center; z-index: 1; }
+
+.main-title { display: inline-block; position: relative; }
+
+.gallery-container h1 {
+
+    font-family: 'Caveat', cursive; font-size: 4.5rem; font-weight: 700;
+
+    background: linear-gradient(to bottom, #d63384, #8b0000);
+
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+
+    padding: 20px 40px; display: inline-block; line-height: 1.4; overflow: visible;
+
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.1));
+
+}
+
+.title-underline { width: 60%; height: 3px; background: linear-gradient(to right, transparent, #d63384, transparent); margin: -10px auto 0; }
+
+
+
+/* GRILLA Y SOBRES (ESTILO DIBUJO) */
+
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 80px; margin-top: 50px; }
+
+.envelope-wrapper { display: flex; flex-direction: column; align-items: center; }
+
+
+
+.envelope {
+
+    position: relative; width: 200px; height: 140px; background: var(--bg);
+
+    border: 3px solid #462d1a; border-radius: 5px; cursor: pointer;
+
+    transition: 0.3s ease; box-shadow: 0 10px 20px rgba(70, 45, 26, 0.2);
+
+}
+
+.envelope .pocket {
+
+    position: absolute; width: 100%; height: 100%; background: var(--bg);
+
+    clip-path: polygon(0 0, 50% 60%, 100% 0, 100% 100%, 0 100%); z-index: 3;
+
+}
+
+.envelope .letter-preview {
+
+    position: absolute; bottom: 10px; left: 10px; width: 180px; height: 120px;
+
+    background: #fff; z-index: 2; border: 2px solid #462d1a;
+
+    transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+}
+
+.envelope .flap {
+
+    position: absolute; top: -3px; left: -3px; width: calc(100% + 6px); height: calc(100% + 6px);
+
+    background: var(--bg); border: 3px solid #462d1a; clip-path: polygon(0 0, 50% 60%, 100% 0);
+
+    z-index: 4; transition: 0.4s ease; transform-origin: top;
+
+}
+
+.envelope:hover .flap { transform: rotateX(160deg); z-index: 1; }
+
+.envelope:hover .letter-preview { transform: translateY(-70px) rotate(-4deg); }
+
+.label { margin-top: 20px; font-weight: 700; color: #462d1a; }
+
+
+
+/* MODAL Y CARTA (ESTILO NOTA DE IPHONE) */
+
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 2000; }
+
+.overlay { position: absolute; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); backdrop-filter: blur(15px); }
+
+
+
+.paper {
+
+    background: #ffffff;
+
+    width: 90%;
+
+    max-width: 380px;
+
+    max-height: 80vh; /* Limitamos la altura al 80% de la pantalla */
+
+    padding: 50px 30px;
+
+    position: relative;
+
+    z-index: 2001;
+
+    border-radius: 28px;
+
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+
+   
+
+    font-family: 'Inter', sans-serif;
+
+    font-size: 1.1rem;
+
+    line-height: 1.6;
+
+    color: #1c1c1e;
+
+    text-align: left;
+
+
+
+    /* ESTO ACTIVA EL SCROLL */
+
+    overflow-y: auto;
+
+    display: block;
+
+}
+
+
+
+/* Opcional: Para que el scroll se vea limpio estilo iPhone */
+
+.paper::-webkit-scrollbar {
+
+    width: 6px;
+
+}
+
+.paper::-webkit-scrollbar-thumb {
+
+    background: rgba(0,0,0,0.1);
+
+    border-radius: 10px;
+
+}
+
+
+
+.red-line {
+
+    position: absolute; left: 20px; top: 0; width: 1px; height: 100%;
+
+    background: rgba(255, 0, 0, 0.1);
+
+}
+
+
+
+.close-btn {
+
+    position: absolute; top: 15px; right: 15px; background: #f2f2f7;
+
+    border: none; color: #8e8e93; width: 32px; height: 32px;
+
+    border-radius: 50%; font-size: 16px; cursor: pointer;
+
+    display: flex; justify-content: center; align-items: center;
+
+}
+
+
+
+.logout-btn { display: inline-block; text-decoration: none; background: white; color: #ff3b30; padding: 10px 25px; border-radius: 50px; font-weight: 600; border: 1.5px solid #ff3b30; margin-top: 40px; }
+
+
+
+.heart-fall { position: fixed; top: -10vh; z-index: 3000; pointer-events: none; animation: fall 4s linear forwards; }
+
+@keyframes fall { to { transform: translateY(110vh) rotate(360deg); } }
+
+#instrucciones {
+    font-family: 'Caveat', cursive; /* Usamos la misma del título para que combine */
+    font-size: 1.8rem;
+    color: #d63384;
+    margin-top: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    opacity: 0.9;
+    
+    /* Animación de pulso suave */
+    animation: pulseText 2s infinite ease-in-out;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes pulseText {
+    0% { transform: scale(1); opacity: 0.7; }
+    50% { transform: scale(1.05); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.7; }
+}

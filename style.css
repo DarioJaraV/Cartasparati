@@ -1,0 +1,134 @@
+/* Reset y Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background: #fdf2f2; /* Fondo cálido suave */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Contenedor Responsive */
+.login-container {
+    width: 90%;
+    max-width: 380px;
+}
+
+.login-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(214, 51, 132, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #d63384;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+p {
+    color: #888;
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+/* Inputs */
+.input-group {
+    text-align: left;
+    margin-bottom: 1.2rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #555;
+    padding-left: 5px;
+}
+
+input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #f0f0f0;
+    border-radius: 12px;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #ffb3d9;
+    background-color: #fff9fb;
+}
+
+/* Botón con Efecto Corazones */
+.btn-login {
+    position: relative;
+    width: 100%;
+    padding: 14px;
+    background: #d63384;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    overflow: hidden; /* Mantiene los corazones dentro de los bordes del botón */
+    transition: transform 0.2s ease, background 0.3s ease;
+    z-index: 1;
+    margin-top: 10px;
+}
+
+.btn-login:hover {
+    background: #c2206f;
+    transform: scale(1.02);
+}
+
+.btn-login:active {
+    transform: scale(0.98);
+}
+
+.btn-text {
+    position: relative;
+    z-index: 2; /* Texto siempre arriba de los corazones */
+}
+
+/* Partículas de Corazón */
+.heart-particle {
+    position: absolute;
+    color: rgba(255, 255, 255, 0.9); /* Corazones blancos */
+    pointer-events: none;
+    z-index: 1;
+    animation: floatUp 0.8s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-40px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Ajustes para Móvil */
+@media (max-width: 400px) {
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+}

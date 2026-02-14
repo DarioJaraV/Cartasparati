@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Mis Cartas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            font-family: 'Poppins', sans-serif;
+        }
+        .login-card {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; width: 300px;
+        }
+        h2 { color: #d63384; margin-bottom: 25px; }
+        input {
+            width: 100%; padding: 12px; margin-bottom: 15px;
+            border: 1.5px solid #eee; border-radius: 8px; box-sizing: border-box;
+        }
+        button {
+            width: 100%; padding: 12px; border: none; border-radius: 8px;
+            background: #d63384; color: white; font-weight: 600; cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover { background: #b02a6b; transform: translateY(-2px); }
+        .error { color: #ff4d4d; font-size: 0.8rem; margin-bottom: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Entrar</h2>
+        <div id="error-msg" class="error">Usuario o contraseña incorrectos</div>
+        <input type="text" id="userInput" placeholder="Usuario">
+        <input type="password" id="passInput" placeholder="Contraseña">
+        <button onclick="login()">Ingresar</button>
+    </div>
+
+    <script>
+        function login() {
+            const user = document.getElementById('userInput').value;
+            const pass = document.getElementById('passInput').value;
+            const error = document.getElementById('error-msg');
+
+            // CREDENCIALES CONFIGURADAS
+            if (user === 'admin' && pass === 'dario') {
+                localStorage.setItem('currentUser', 'admin');
+                window.location.href = 'galeria.html';
+            } 
+            else if (user === 'jugodeguinda' && pass === 'zkgsru') {
+                localStorage.setItem('currentUser', 'espectador');
+                window.location.href = 'galeria.html';
+            } 
+            else {
+                error.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
