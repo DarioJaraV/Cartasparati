@@ -15,14 +15,15 @@
         <label>Título:</label>
         <input type="text" id="editTitle">
         <label>Mensaje:</label>
-        <textarea id="editMsg" rows="4"></textarea>
-        <label>Color:</label>
+        <textarea id="editMsg" rows="6"></textarea>
+        <label>Color del Sobre:</label>
         <input type="color" id="editColor">
         <div class="editor-buttons">
-            <button onclick="saveChanges()" class="btn-primary">Guardar Cambios</button>
-            <button onclick="deleteLetter()" id="btn-delete" class="btn-danger hidden">Eliminar Carta</button>
-            <button onclick="crearNuevaCarta()" class="btn-secondary">+ Nueva Carta</button>
+            <button onclick="saveChanges()" class="btn-primary">Guardar Localmente</button>
+            <button onclick="exportarCodigo()" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px;">Generar Código para GitHub</button>
+            <button onclick="crearNuevaCarta()" class="btn-secondary" style="margin-top: 5px;">+ Nueva Carta</button>
         </div>
+        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">* Al terminar, usa "Generar Código" y pega el resultado en tu archivo de GitHub para que ella lo pueda ver.</p>
     </div>
 
     <div class="gallery-container">
@@ -31,7 +32,7 @@
                 <h1>Tus Cartas</h1>
                 <div class="title-underline"></div>
             </div>
-            <p id="instrucciones">Presiona una carta para leer</p>
+            <p id="instrucciones">✨ Presiona una carta para leer ✨</p>
         </header>
         <div class="cards-grid" id="contenedor-sobres"></div>
         <div class="footer-links">
@@ -53,10 +54,19 @@
         let cartaSeleccionadaIdx = null;
 
         if (!user) window.location.href = 'index.html';
-        
+
+        // ============================================================
+        // AQUÍ ES DONDE PEGAS EL CÓDIGO QUE GENERES PARA GITHUB
+        // ============================================================
         function getCartas() {
-            return JSON.parse(localStorage.getItem('misCartas')) || [
-                { titulo: "Recuerdos", mensaje: "¡Este es un mensaje especial! ❤️", color: "#e6b8af" }
+            // Intenta cargar lo que has editado tú en este navegador
+            const locales = localStorage.getItem('misCartas');
+            if (user === 'admin' && locales) return JSON.parse(locales);
+
+            // ESTE ES EL CONTENIDO "DE FÁBRICA" QUE ELLA VERÁ
+            return [
+                { "titulo": "Para mi niña", "mensaje": "Escribe aquí tu primer mensaje largo y romántico...", "color": "#ff9a9e" },
+                { "titulo": "Recuerdos", "mensaje": "Aquí puedes poner otro mensaje especial...", "color": "#fecfef" }
             ];
         }
 
@@ -90,7 +100,6 @@
                 document.getElementById('editTitle').value = misCartas[i].titulo;
                 document.getElementById('editMsg').value = misCartas[i].mensaje;
                 document.getElementById('editColor').value = misCartas[i].color;
-                document.getElementById('btn-delete').classList.remove('hidden');
             } else {
                 document.getElementById('text').innerText = misCartas[i].mensaje;
                 document.getElementById('modal').classList.remove('hidden');
@@ -104,8 +113,18 @@
                 misCartas[cartaSeleccionadaIdx].color = document.getElementById('editColor').value;
                 localStorage.setItem('misCartas', JSON.stringify(misCartas));
                 render();
-                alert("¡Guardado!");
+                alert("Guardado en este navegador. ¡No olvides subir el código a GitHub!");
             }
+        }
+
+        function crearNuevaCarta() {
+            misCartas.push({ titulo: "Nueva Carta", mensaje: "Mensaje...", color: "#ffffff" });
+            render();
+        }
+
+        function exportarCodigo() {
+            const data = JSON.stringify(misCartas, null, 4);
+            prompt("COPIA ESTO y pégalo dentro del 'return [ ... ]' en el código de GitHub:", data);
         }
 
         function closeLetter() { document.getElementById('modal').classList.add('hidden'); }
