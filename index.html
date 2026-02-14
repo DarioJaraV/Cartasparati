@@ -40,24 +40,28 @@
     </div>
 
     <script>
-        function login() {
-            const user = document.getElementById('userInput').value;
-            const pass = document.getElementById('passInput').value;
-            const error = document.getElementById('error-msg');
+    function login() {
+        const user = document.getElementById('user').value;
+        const pass = document.getElementById('pass').value;
 
-            // CREDENCIALES CONFIGURADAS
-            if (user === 'admin' && pass === 'dario') {
-                localStorage.setItem('currentUser', 'admin');
-                window.location.href = 'galeria.html';
-            } 
-            else if (user === 'jugodeguinda' && pass === 'zkgsru') {
-                localStorage.setItem('currentUser', 'espectador');
-                window.location.href = 'galeria.html';
-            } 
-            else {
-                error.style.display = 'block';
-            }
+        // Aquí definimos las claves válidas
+        const clavesValidas = ['dario', '1111', '0612'];
+
+        // Comprobamos si el usuario es admin y la clave es una de las tres
+        if (user === 'admin' && clavesValidas.includes(pass)) {
+            localStorage.setItem('currentUser', 'admin');
+            window.location.href = 'galeria.html';
+        } 
+        // Si quieres que ella también entre con una clave simple
+        else if (user === 'invitado' || user === 'amor') {
+            localStorage.setItem('currentUser', 'invitado');
+            window.location.href = 'galeria.html';
+        } 
+        else {
+            alert('Usuario o contraseña incorrectos, hrmn. Intenta de nuevo.');
         }
-    </script>
+    }
+</script>
 </body>
+
 </html>
