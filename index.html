@@ -38,31 +38,33 @@
         <input type="password" id="passInput" placeholder="Contraseña">
         <button onclick="login()">Ingresar</button>
     </div>
-
-   <script>
+<script>
     function login() {
-        const user = document.getElementById('user').value;
-        const pass = document.getElementById('pass').value;
+        // Obtenemos los valores y los pasamos a minúsculas para evitar errores con las mayúsculas
+        const user = document.getElementById('user').value.toLowerCase().trim();
+        const pass = document.getElementById('pass').value.trim();
 
-        // Aquí definimos las claves válidas
-        const clavesValidas = ['dario', '1111', '0612'];
+        // Configuración de claves
+        const clavesValidas = ['1111', '0612'];
 
-        // Comprobamos si el usuario es admin y la clave es una de las tres
-        if (user === 'admin' && clavesValidas.includes(pass)) {
+        // 1. Caso para ti (Admin)
+        if (user === 'admin' && pass === 'dario') {
             localStorage.setItem('currentUser', 'admin');
             window.location.href = 'galeria.html';
         } 
-        // Si quieres que ella también entre con una clave simple
-        else if (user === 'invitado' || user === 'amor') {
+        // 2. Caso para ella (jugodeguinda)
+        else if (user === 'jugodeguinda' && clavesValidas.includes(pass)) {
             localStorage.setItem('currentUser', 'invitado');
             window.location.href = 'galeria.html';
         } 
+        // 3. Error
         else {
-            alert('Usuario o contraseña incorrectos, hrmn. Intenta de nuevo.');
+            alert('Usuario o contraseña incorrectos. Revisa bien, amor.');
         }
     }
 </script>
 </body>
 
 </html>
+
 
