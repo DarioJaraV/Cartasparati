@@ -10,19 +10,18 @@
 <body>
 
     <div id="editor-panel" class="hidden">
-        <h3>Modo Editor</h3>
+        <h3>Modo Editor (Nube)</h3>
         <p id="edit-status">Selecciona una carta para editar</p>
         <label>Título:</label>
         <input type="text" id="editTitle">
         <label>Mensaje:</label>
         <textarea id="editMsg" rows="6"></textarea>
-        <label>Color del Sobre:</label>
+        <label>Color:</label>
         <input type="color" id="editColor">
         <div class="editor-buttons">
-            <button onclick="saveChanges()" class="btn-primary">Guardar Localmente</button>
-            <button onclick="exportarCodigo()" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px;">Generar Código para GitHub</button>
-            <button onclick="crearNuevaCarta()" class="btn-secondary" style="margin-top: 5px;">+ Nueva Carta</button>
-            <button onclick="eliminarCarta()" id="btn-eliminar" style="background: #ff3b30; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px;" class="hidden">Eliminar Carta</button>
+            <button id="btnGuardar" class="btn-primary">Guardar en la Nube</button>
+            <button id="btnNueva" class="btn-secondary">+ Nueva Carta</button>
+            <button id="btnEliminar" style="background: #ff3b30; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer;" class="hidden">Eliminar</button>
         </div>
     </div>
 
@@ -41,38 +40,56 @@
     </div>
 
     <div id="modal" class="modal hidden">
-        <div class="overlay" onclick="closeLetter()"></div>
+        <div class="overlay" id="modalOverlay"></div>
         <div class="paper">
-            <button class="close-btn" onclick="closeLetter()">✕</button>
+            <button class="close-btn" id="btnClose">✕</button>
             <div class="red-line"></div>
             <div id="text" class="note-content" style="white-space: pre-wrap;"></div>
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        // Importar Firebase
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // Configuración de tu proyecto
+        const firebaseConfig = {
+            apiKey: "AIzaSyAG1ae4KiQopG_k4dY93jitMnszBQRwkxY",
+            authDomain: "cartasamor-449ed.firebaseapp.com",
+            projectId: "cartasamor-449ed",
+            storageBucket: "cartasamor-449ed.firebasestorage.app",
+            messagingSenderId: "282533030210",
+            appId: "1:282533030210:web:7827acfeb9b33e731b00db",
+            measurementId: "G-MWBZWFK3T5"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const docRef = doc(db, "datos", "cartas_usuario");
+
         const user = localStorage.getItem('currentUser');
+        let misCartas = [];
         let cartaSeleccionadaIdx = null;
 
         if (!user) window.location.href = 'index.html';
+        if (user === 'admin') document.getElementById('editor-panel').classList.remove('hidden');
 
-        function getCartas() {
-            // Prioridad al admin para editar, pero el return tiene tu carta real
-            const locales = localStorage.getItem('misCartas');
-            if (user === 'admin' && locales) return JSON.parse(locales);
-
-            return [
-                {
-                    "titulo": "Carta de corazon",
-                    "mensaje": "Hola, amor no te llamo o por tu nombre porque me dijiste que no te gusta, por más que a mí me encanta cualquier cosa que me recuerde a él, y eso es porque claramente me recuerda a ti. Lo de nosotros es algo hermoso para mí; llegaste cuando no te quería, cuando no te buscaba, pero al llegar me di cuenta de lo que te necesitaba, lo mucho que necesitaba aprender de ti, de tu forma de ser y de tu forma de amar. Y aun tengo que aprender mucho de amar.\n\nPensé que podía hacerlo bien si es que hacía las cosas de corazón, pero veo que el corazón solo ve mi bien y mi mente ve el tuyo; por eso decido hacerle caso a mi mente, ya que haciéndole caso lleno también mi corazón.\n\nVerte feliz es el regalo más grande que una persona podría tener y yo quiero ser el que vea ese regalo todos los días. Sé que los perdón no sirven, que mis actos ya están hechos, que mi palabra fallo en un momento, pero si algo vi de todo, si algo me di c... sé que te hice sentir bien, aunque nunca saldrán de mi cabeza las veces que fallé. Pero siempre que te recuerdo, está esa sonrisa perfecta ahí y suena esa voz maravillosa ahí que con un solo tono hace que mis oídos sientan tus cantos. Me encanta tener la mente que tengo porque me hace acordarme de ti a detalle, acordarme del tono de tu dulce voz, de la forma de esos ojitos preciosos, de la sonrisa que cualquier persona desearía tener, de ese cuerpo perfecto que a más de uno le gustaría tocar. Podría decir miles de cosas más, pero voy a resumir mucho, por más que esta palabra no entre ni un poco, sé todo lo que quiero expresar:\n\nPERDÓN Y TE AMO MUCHO. Te amo hasta el infinito, hasta el fin del universo, o sea que te amo sin límites.\n\nEsta carta la escribí sintiendo cada emoción en mi cuerpo; escribí cosas con tristeza, con odio (no hacia ti, claramente) pero sobre todo siempre con amor, que es lo que más siento al pensarte, verte u escucharte.",
-                    "color": "#e83511"
-                }
-            ];
-        }
-
-        let misCartas = getCartas();
-
-        if (user === 'admin') {
-            document.getElementById('editor-panel').classList.remove('hidden');
+        // Cargar datos desde Firebase
+        async function cargarCartas() {
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                misCartas = docSnap.data().lista;
+            } else {
+                // Carta inicial si la base de datos está vacía
+                misCartas = [{
+                    titulo: "Carta de corazon",
+                    mensaje: "Hola amor...",
+                    color: "#e83511"
+                }];
+                await setDoc(docRef, { lista: misCartas });
+            }
+            render();
         }
 
         function render() {
@@ -82,13 +99,14 @@
                 const wrap = document.createElement('div');
                 wrap.className = 'envelope-wrapper';
                 wrap.innerHTML = `
-                    <div class="envelope" onclick="selectLetter(${i})" style="--bg: ${c.color}">
+                    <div class="envelope" id="env-${i}" style="--bg: ${c.color}">
                         <div class="letter-preview"></div>
                         <div class="pocket"></div>
                         <div class="flap"></div>
                     </div>
                     <span class="label">${c.titulo}</span>
                 `;
+                wrap.querySelector('.envelope').onclick = () => selectLetter(i);
                 cont.appendChild(wrap);
             });
         }
@@ -96,48 +114,49 @@
         function selectLetter(i) {
             cartaSeleccionadaIdx = i;
             if(user === 'admin') {
-                document.getElementById('edit-status').innerText = "Editando: " + misCartas[i].titulo;
                 document.getElementById('editTitle').value = misCartas[i].titulo;
                 document.getElementById('editMsg').value = misCartas[i].mensaje;
                 document.getElementById('editColor').value = misCartas[i].color;
-                document.getElementById('btn-eliminar').classList.remove('hidden');
+                document.getElementById('btnEliminar').classList.remove('hidden');
+                document.getElementById('edit-status').innerText = "Editando: " + misCartas[i].titulo;
             } else {
                 document.getElementById('text').innerText = misCartas[i].mensaje;
                 document.getElementById('modal').classList.remove('hidden');
             }
         }
 
-        function saveChanges() {
+        // Guardar cambios en la nube
+        document.getElementById('btnGuardar').onclick = async () => {
             if(cartaSeleccionadaIdx !== null) {
                 misCartas[cartaSeleccionadaIdx].titulo = document.getElementById('editTitle').value;
                 misCartas[cartaSeleccionadaIdx].mensaje = document.getElementById('editMsg').value;
                 misCartas[cartaSeleccionadaIdx].color = document.getElementById('editColor').value;
-                localStorage.setItem('misCartas', JSON.stringify(misCartas));
+                
+                await setDoc(docRef, { lista: misCartas });
                 render();
-                alert("Guardado localmente.");
+                alert("¡Sincronizado con la Nube!");
             }
-        }
+        };
 
-        function crearNuevaCarta() {
-            misCartas.push({ titulo: "Nueva Carta", mensaje: "...", color: "#ffffff" });
+        document.getElementById('btnNueva').onclick = async () => {
+            misCartas.push({ titulo: "Nueva Carta", mensaje: "Escribe algo...", color: "#ffffff" });
+            await setDoc(docRef, { lista: misCartas });
             render();
-        }
+        };
 
-        function eliminarCarta() {
-            if (confirm("¿Borrar esta carta?")) {
+        document.getElementById('btnEliminar').onclick = async () => {
+            if(confirm("¿Borrar esta carta para siempre?")) {
                 misCartas.splice(cartaSeleccionadaIdx, 1);
-                localStorage.setItem('misCartas', JSON.stringify(misCartas));
+                await setDoc(docRef, { lista: misCartas });
                 render();
+                document.getElementById('btnEliminar').classList.add('hidden');
             }
-        }
+        };
 
-        function exportarCodigo() {
-            const data = JSON.stringify(misCartas, null, 4);
-            prompt("Copia esto para actualizar el código en GitHub:", data);
-        }
+        document.getElementById('btnClose').onclick = () => document.getElementById('modal').classList.add('hidden');
+        document.getElementById('modalOverlay').onclick = () => document.getElementById('modal').classList.add('hidden');
 
-        function closeLetter() { document.getElementById('modal').classList.add('hidden'); }
-        render();
+        cargarCartas();
     </script>
 </body>
 </html>
