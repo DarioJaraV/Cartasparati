@@ -22,8 +22,8 @@
             <button onclick="saveChanges()" class="btn-primary">Guardar Localmente</button>
             <button onclick="exportarCodigo()" style="background: #28a745; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px;">Generar Código para GitHub</button>
             <button onclick="crearNuevaCarta()" class="btn-secondary" style="margin-top: 5px;">+ Nueva Carta</button>
+            <button onclick="eliminarCarta()" id="btn-eliminar" style="background: #ff3b30; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; margin-top: 5px;" class="hidden">Eliminar Carta</button>
         </div>
-        <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">* Al terminar, usa "Generar Código" y pega el resultado en tu archivo de GitHub para que ella lo pueda ver.</p>
     </div>
 
     <div class="gallery-container">
@@ -45,7 +45,7 @@
         <div class="paper">
             <button class="close-btn" onclick="closeLetter()">✕</button>
             <div class="red-line"></div>
-            <div id="text" class="note-content"></div>
+            <div id="text" class="note-content" style="white-space: pre-wrap;"></div>
         </div>
     </div>
 
@@ -55,18 +55,17 @@
 
         if (!user) window.location.href = 'index.html';
 
-        // ============================================================
-        // AQUÍ ES DONDE PEGAS EL CÓDIGO QUE GENERES PARA GITHUB
-        // ============================================================
         function getCartas() {
-            // Intenta cargar lo que has editado tú en este navegador
+            // Prioridad al admin para editar, pero el return tiene tu carta real
             const locales = localStorage.getItem('misCartas');
             if (user === 'admin' && locales) return JSON.parse(locales);
 
-            // ESTE ES EL CONTENIDO "DE FÁBRICA" QUE ELLA VERÁ
             return [
-                { "titulo": "Para mi niña", "mensaje": "Escribe aquí tu primer mensaje largo y romántico...", "color": "#ff9a9e" },
-                { "titulo": "Recuerdos", "mensaje": "Aquí puedes poner otro mensaje especial...", "color": "#fecfef" }
+                {
+                    "titulo": "Carta de corazon",
+                    "mensaje": "Hola, amor no te llamo o por tu nombre porque me dijiste que no te gusta, por más que a mí me encanta cualquier cosa que me recuerde a él, y eso es porque claramente me recuerda a ti. Lo de nosotros es algo hermoso para mí; llegaste cuando no te quería, cuando no te buscaba, pero al llegar me di cuenta de lo que te necesitaba, lo mucho que necesitaba aprender de ti, de tu forma de ser y de tu forma de amar. Y aun tengo que aprender mucho de amar.\n\nPensé que podía hacerlo bien si es que hacía las cosas de corazón, pero veo que el corazón solo ve mi bien y mi mente ve el tuyo; por eso decido hacerle caso a mi mente, ya que haciéndole caso lleno también mi corazón.\n\nVerte feliz es el regalo más grande que una persona podría tener y yo quiero ser el que vea ese regalo todos los días. Sé que los perdón no sirven, que mis actos ya están hechos, que mi palabra fallo en un momento, pero si algo vi de todo, si algo me di c... sé que te hice sentir bien, aunque nunca saldrán de mi cabeza las veces que fallé. Pero siempre que te recuerdo, está esa sonrisa perfecta ahí y suena esa voz maravillosa ahí que con un solo tono hace que mis oídos sientan tus cantos. Me encanta tener la mente que tengo porque me hace acordarme de ti a detalle, acordarme del tono de tu dulce voz, de la forma de esos ojitos preciosos, de la sonrisa que cualquier persona desearía tener, de ese cuerpo perfecto que a más de uno le gustaría tocar. Podría decir miles de cosas más, pero voy a resumir mucho, por más que esta palabra no entre ni un poco, sé todo lo que quiero expresar:\n\nPERDÓN Y TE AMO MUCHO. Te amo hasta el infinito, hasta el fin del universo, o sea que te amo sin límites.\n\nEsta carta la escribí sintiendo cada emoción en mi cuerpo; escribí cosas con tristeza, con odio (no hacia ti, claramente) pero sobre todo siempre con amor, que es lo que más siento al pensarte, verte u escucharte.",
+                    "color": "#e83511"
+                }
             ];
         }
 
@@ -97,9 +96,11 @@
         function selectLetter(i) {
             cartaSeleccionadaIdx = i;
             if(user === 'admin') {
+                document.getElementById('edit-status').innerText = "Editando: " + misCartas[i].titulo;
                 document.getElementById('editTitle').value = misCartas[i].titulo;
                 document.getElementById('editMsg').value = misCartas[i].mensaje;
                 document.getElementById('editColor').value = misCartas[i].color;
+                document.getElementById('btn-eliminar').classList.remove('hidden');
             } else {
                 document.getElementById('text').innerText = misCartas[i].mensaje;
                 document.getElementById('modal').classList.remove('hidden');
@@ -113,18 +114,26 @@
                 misCartas[cartaSeleccionadaIdx].color = document.getElementById('editColor').value;
                 localStorage.setItem('misCartas', JSON.stringify(misCartas));
                 render();
-                alert("Guardado en este navegador. ¡No olvides subir el código a GitHub!");
+                alert("Guardado localmente.");
             }
         }
 
         function crearNuevaCarta() {
-            misCartas.push({ titulo: "Nueva Carta", mensaje: "Mensaje...", color: "#ffffff" });
+            misCartas.push({ titulo: "Nueva Carta", mensaje: "...", color: "#ffffff" });
             render();
+        }
+
+        function eliminarCarta() {
+            if (confirm("¿Borrar esta carta?")) {
+                misCartas.splice(cartaSeleccionadaIdx, 1);
+                localStorage.setItem('misCartas', JSON.stringify(misCartas));
+                render();
+            }
         }
 
         function exportarCodigo() {
             const data = JSON.stringify(misCartas, null, 4);
-            prompt("COPIA ESTO y pégalo dentro del 'return [ ... ]' en el código de GitHub:", data);
+            prompt("Copia esto para actualizar el código en GitHub:", data);
         }
 
         function closeLetter() { document.getElementById('modal').classList.add('hidden'); }
