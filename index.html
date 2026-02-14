@@ -34,17 +34,25 @@
     <div class="login-card">
         <h2>Bienvenida Mi Princesa</h2>
         <div id="error-msg" class="error">Usuario o contraseña incorrectos</div>
-        <input type="text" id="userInput" placeholder="Usuario">
-        <input type="password" id="passInput" placeholder="Contraseña">
+        <input type="text" id="user" placeholder="Usuario">
+        <input type="password" id="pass" placeholder="Contraseña">
         <button onclick="login()">Ingresar</button>
     </div>
+
 <script>
     function login() {
-        // Obtenemos los valores y los pasamos a minúsculas para evitar errores con las mayúsculas
-        const user = document.getElementById('user').value.toLowerCase().trim();
-        const pass = document.getElementById('pass').value.trim();
+        // Ahora sí buscamos los IDs correctos: 'user' y 'pass'
+        const userElement = document.getElementById('user');
+        const passElement = document.getElementById('pass');
 
-        // Configuración de claves
+        if (!userElement || !passElement) {
+            console.error("No se encontraron los inputs");
+            return;
+        }
+
+        const user = userElement.value.toLowerCase().trim();
+        const pass = passElement.value.trim();
+
         const clavesValidas = ['1111', '0612'];
 
         // 1. Caso para ti (Admin)
@@ -57,14 +65,14 @@
             localStorage.setItem('currentUser', 'invitado');
             window.location.href = 'galeria.html';
         } 
-        // 3. Error
         else {
+            const errorDiv = document.getElementById('error-msg');
+            errorDiv.style.display = 'block';
             alert('Usuario o contraseña incorrectos. Revisa bien, amor.');
         }
     }
 </script>
 </body>
-
 </html>
 
 
