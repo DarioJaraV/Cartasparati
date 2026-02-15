@@ -75,23 +75,20 @@
         if (!user) window.location.href = 'index.html';
         if (user === 'admin') document.getElementById('editor-panel').classList.remove('hidden');
 
+        // Cargar datos desde Firebase
         async function cargarCartas() {
-            try {
-                const docSnap = await getDoc(docRef);
-                if (docSnap.exists()) {
-                    misCartas = docSnap.data().lista;
-                    console.log("Cartas recuperadas con éxito");
-                } else {
-                    // SI NO EXISTE, NO SOBRESCRIBIMOS CON VACÍO
-                    console.log("No se encontraron cartas en la nube. Crea una nueva para empezar.");
-                    misCartas = []; 
-                }
-                render();
-            } catch (e) { 
-                console.error("Error de conexión:", e);
-                alert("Hubo un error al conectar con la base de datos. Tus cartas no se han borrado, intenta recargar.");
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                misCartas = docSnap.data().lista;
+            } else {
+                // Carta inicial si la base de datos está vacía
+                misCartas = [{
+                    titulo: "Carta de corazon",
+                    mensaje: "Hola amor...",
+                    color: "#e83511"
+                }];
+                await setDoc(docRef, { lista: misCartas });
             }
-        }
             render();
         }
 
@@ -163,5 +160,3 @@
     </script>
 </body>
 </html>
-
-
